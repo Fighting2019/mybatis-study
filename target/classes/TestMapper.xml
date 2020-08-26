@@ -2,8 +2,28 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.atzyy.test">
-    <select id="selectTest" resultType="com.atzyy.entity.TestEntity">
+<!--
+    接口方式调用，两个映射：
+    namespace：映射到接口的全限定名
+    id：映射到方法名
+-->
+<mapper namespace="com.atzyy.mapper.TestMapper">
+    <resultMap id="BaseResultMap" type="com.atzyy.entity.TestEntity">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="age" jdbcType="INTEGER" property="age"/>
+        <result column="first_name" jdbcType="VARCHAR" property="firstName"/>
+        <result column="grow_up" jdbcType="INTEGER" property="growUp" />
+        <result column="grow_up" jdbcType="INTEGER" property="growUpName" typeHandler="com.atzyy.typeHandlers.EnumTypeHandler"/>
+    </resultMap>
+    <select id="selectTest" resultMap="BaseResultMap">
         select * from test where id = #{id}
     </select>
+
+    <insert id="addTest" parameterType="com.atzyy.entity.TestEntity" useGeneratedKeys="true" keyProperty="id">
+        insert into test(name,age,first_name,grow_up) values (
+            #{name},#{age},#{firstName},#{growUp}
+        )
+    </insert>
+
 </mapper>

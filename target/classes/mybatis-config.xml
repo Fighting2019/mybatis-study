@@ -1,21 +1,103 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- 此处使用的是 mybatis-3-config dtd文件引用 -->
+<!--
+    此处使用的是 mybatis-3-config dtd文件引用
+    dtd 配置文件路径在：mybatis 包下 org.apache.ibatis.builder.xml 路径下
+-->
 <!DOCTYPE configuration
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-    <!-- environments 配置 -->
+    <!--
+        1、mybatis 通过 <properties> 标签引入外部 properties 配置文件中的内容，有两个属性
+            url：引入网络或者磁盘路径下的资源
+            resource：引入类路径下的资源
+         加载顺序，1：读取在 properties 元素体内指定的属性。
+                  2：根据 url 或 resource 属性读取类路径下的文件，并覆盖之前的配置。
+                  3：最后读取作为方法参数传递的属性，并覆盖之前读取过的同名属性。
+         该配置文件与 spring 整合后就不需要我们进行引入了
+     -->
+    <properties resource="jdbc.properties">
+        <property name="jdbc.name" value="root"/>
+        <property name="jdbc.name" value="root"/>
+    </properties>
+
+    <!--
+        2、设置配置项
+        可参考：https://mybatis.org/mybatis-3/zh/configuration.html#settings
+     -->
+    <settings>
+        <!-- 驼峰命名 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <!--
+        3、指定别名子标签<typeAlias>有如下属性
+            type: 指定要取别名的类型的全限定名，默认别名是类名小写：testEntity
+            alias：指定的新别名,别名不区分大小写。
+          子标签 <package> 为某个包下所有类批量取别名
+            name：包名，默认别名为类名小写。
+            批量取别名如果类名重复可以使用 @Alias 指定别名
+    -->
+    <typeAliases>
+        <typeAlias type="com.atzyy.entity.TestEntity" alias="testEntity" />
+        <!--<package name=""/>-->
+    </typeAliases>
+
+    <!--
+        4、类型转换器
+    -->
+    <typeHandlers>
+        <typeHandler handler="com.atzyy.typeHandlers.EnumTypeHandler" javaType="com.atzyy.entity.BooleanEnum"/>
+    </typeHandlers>
+    <!--
+       5、environments 配置 多环境配置 default：指定使用哪个环境
+            enviroment 配置一个具体的环境信息 id:代表当前环境的唯一标识
+                transactionManager 配置事务管理器 type：JDBC（使用 jdbc 的方式进行事务管理）|MANAGED，自定义事务管理器，实现接口TransactionFactory
+                dataSource 数据源；type： POOLED(使用连接池)|JNDI|UNPOOLED，自定义数据源实现 DataSourceFactory 接口
+
+    -->
     <environments default="development">
+        <environment id="test">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <!-- 指定默认值 ${jdbc.username:seckill} -->
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
         <environment id="development">
             <transactionManager type="JDBC"/>
             <dataSource type="POOLED">
-                <property name="driver" value="com.mysql.jdbc.Driver"/>
-                <property name="url" value="jdbc:mysql://106.53.228.222:3306/seckill"/>
-                <property name="username" value="seckill"/>
-                <property name="password" value="seckill"/>
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <!-- 指定默认值 ${jdbc.username:seckill} -->
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
             </dataSource>
         </environment>
     </environments>
+
+    <!--
+        6、支持多厂商数据源，在 sql 映射配置文件中通过属性  databaseId="oracle"  指定使用哪个厂商的数据库
+    -->
+    <databaseIdProvider type="DB_VENDOR">
+        <!-- 为不同厂商取别名 -->
+        <property name="Oracle" value="oracle"/>
+        <property name="Mysql" value="mysql"/>
+    </databaseIdProvider>
+
+    <!--
+        mapper：注册一个 sql 映射
+          注册配置文件
+            resource：引用类路径下的 sql 映射文件
+            url：引用网络或磁盘路径下的 sql 映射文件
+          注册接口
+            class：引用（注册）接口
+                1.有 sql 映射文件，映射文件名必须和接口同名，并且放在与接口同一目录下
+                2.没有 sql 映射文件，所有的 sql 都是利用注解写在接口上
+     -->
     <mappers>
         <mapper resource="TestMapper.xml"/>
     </mappers>

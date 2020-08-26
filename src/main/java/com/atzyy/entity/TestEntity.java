@@ -8,4 +8,6 @@ public class TestEntity {
     private String name;
     private Integer age;
     private String firstName;
+    private Integer growUp;
+    private String growUpName;
 }
