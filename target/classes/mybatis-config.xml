@@ -28,6 +28,8 @@
     <settings>
         <!-- 驼峰命名 -->
         <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!--  指定参数为 Null 时 jdbcType 值，默认为 OTHER -->
+        <setting name="jdbcTypeForNull" value="NULL"/>
     </settings>
 
     <!--
@@ -100,5 +102,6 @@
      -->
     <mappers>
         <mapper resource="TestMapper.xml"/>
+        <mapper resource="DeptInfoMapper.xml"/>
     </mappers>
 </configuration>

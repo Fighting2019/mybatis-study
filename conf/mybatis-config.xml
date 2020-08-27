@@ -28,6 +28,14 @@
     <settings>
         <!-- 驼峰命名 -->
         <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!--  指定参数为 Null 时 jdbcType 值，默认为 OTHER -->
+        <setting name="jdbcTypeForNull" value="NULL"/>
+        <!-- 开启懒加载 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!-- 开启时所有属性都会立即加载，关闭时按需加载用到才会加载 -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+        <!-- 开启二级缓存 -->
+        <setting name="cacheEnabled" value="true"/>
     </settings>
 
     <!--
@@ -100,5 +108,6 @@
      -->
     <mappers>
         <mapper resource="TestMapper.xml"/>
+        <mapper resource="DeptInfoMapper.xml"/>
     </mappers>
 </configuration>

@@ -8,6 +8,10 @@
     id：映射到方法名
 -->
 <mapper namespace="com.atzyy.mapper.TestMapper">
+    <!--
+        自定义结果映射：
+            
+    -->
     <resultMap id="BaseResultMap" type="com.atzyy.entity.TestEntity">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
@@ -15,15 +19,34 @@
         <result column="first_name" jdbcType="VARCHAR" property="firstName"/>
         <result column="grow_up" jdbcType="INTEGER" property="growUp" />
         <result column="grow_up" jdbcType="INTEGER" property="growUpName" typeHandler="com.atzyy.typeHandlers.EnumTypeHandler"/>
+        <association property="deptName" select="com.atzyy.mapper.DeptInfoMapper.selectByNo" column="dept_no"></association>
     </resultMap>
     <select id="selectTest" resultMap="BaseResultMap">
-        select * from test where id = #{id}
+        select * from test where id = #{aaa}
     </select>
 
+    <!--
+        mysql 获取自增主键的值：
+            mybatis 利用 statement.getGenreatedKeys() 获取自增主键，
+            useGeneratedKeys 使用自增主键获取主键值策略
+            keyProperty 指定对应的主键属性，也就是 mybatis 获取到主键值之后，将这个值封装给 javaBean 的哪个属性
+        oracle 获取自增主键
+            使用 <selectKey> 查询序列主键
+                keyProperty：把查出的主键封装给 javaBean 的哪个属性。
+                order：执行顺序,标志 BEFORE/AFTER 在插入 sql 前执行还是插入 sql 后执行
+                resultType：类型
+                <selectKey keyProperty="id" resultType="long" keyColumn="id" order="AFTER"></selectKey>
+                插入前执行顺序：先去序列里查询序列值，封装到 javaBean 再进行插入
+                插入后执行：先插入数据，插入数据时指定 id 为 ${序列}.nextvalue ，然后从插入后的数据中拿到 id 封装到 javaBean
+    -->
     <insert id="addTest" parameterType="com.atzyy.entity.TestEntity" useGeneratedKeys="true" keyProperty="id">
         insert into test(name,age,first_name,grow_up) values (
             #{name},#{age},#{firstName},#{growUp}
         )
     </insert>
 
+
+    <select id="selectByParams" resultMap="BaseResultMap">
+        select * from test where id = #{id} and name = #{name} and age = #{param3}
+    </select>
 </mapper>

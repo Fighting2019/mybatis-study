@@ -10,4 +10,5 @@ public class TestEntity {
     private String firstName;
     private Integer growUp;
     private String growUpName;
+    private String deptName;
 }

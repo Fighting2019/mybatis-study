@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    接口方式调用，两个映射：
+    namespace：映射到接口的全限定名
+    id：映射到方法名
+-->
+<mapper namespace="com.atzyy.mapper.DeptInfoMapper">
+    <select id="selectByNo" resultType="string">
+        select dept_name from dept_info where dept_no = #{deptNo}
+    </select>
+</mapper>

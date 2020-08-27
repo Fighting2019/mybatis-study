@@ -8,6 +8,26 @@
     id：映射到方法名
 -->
 <mapper namespace="com.atzyy.mapper.TestMapper">
+    <!-- 配置开启二级缓存
+        eviction：缓存的回收策略：
+            LRU：（默认）最近最少使用的，移除最长时间不被使用的对象。
+            FIFO：先进先出，按照对象进入缓存的顺序来移除。
+            SOFT：软引用，移除基于垃圾回收器状态和软引用规则的对象。
+            WEAK：弱引用，更积极地移除基于垃圾收集器状态和弱引用规则。
+        flushInterval：缓存刷新间隔，默认不清空，设置一个毫秒值。
+        readOnly：是否只读
+            true 只读：mybatis 认为所有从缓存中获取数据的操作都是只读操作，不会修改数据。
+                mybatis 直接把数据在缓存中的引用交给用户，如果用户修改了数据，会对查询有影响，不安全。
+            false：非只读，mybatis 觉得获取的数据可能会被修改。mybatis 会利用序列化和反序列化技术克隆一份新的数据给你。安全速度慢。
+        size：缓存多少元素
+        type：指定自定义缓存类型，实现 Cache 接口。
+
+    -->
+    <cache eviction="FIFO" flushInterval="60000" readOnly="false" size="1024" type=""/>
+    <!--
+        自定义结果映射：
+            
+    -->
     <resultMap id="BaseResultMap" type="com.atzyy.entity.TestEntity">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
@@ -15,16 +35,31 @@
         <result column="first_name" jdbcType="VARCHAR" property="firstName"/>
         <result column="grow_up" jdbcType="INTEGER" property="growUp" />
         <result column="grow_up" jdbcType="INTEGER" property="growUpName" typeHandler="com.atzyy.typeHandlers.EnumTypeHandler"/>
+        <!--
+            联合分步查询,先查询主表信息，再去关联表查询关联信息
+                property：要赋值的属性
+                column：执行 select 时要传的参数列
+                select：要执行的查询语句
+        -->
+        <association property="deptName" select="com.atzyy.mapper.DeptInfoMapper.selectByNo" column="dept_no"></association>
     </resultMap>
     <select id="selectTest" resultMap="BaseResultMap">
-        select * from test where id = #{id}
+        select * from test where id = #{aaa}
     </select>
 
     <!--
-        获取自增主键的值：
+        mysql 获取自增主键的值：
             mybatis 利用 statement.getGenreatedKeys() 获取自增主键，
             useGeneratedKeys 使用自增主键获取主键值策略
             keyProperty 指定对应的主键属性，也就是 mybatis 获取到主键值之后，将这个值封装给 javaBean 的哪个属性
+        oracle 获取自增主键
+            使用 <selectKey> 查询序列主键
+                keyProperty：把查出的主键封装给 javaBean 的哪个属性。
+                order：执行顺序,标志 BEFORE/AFTER 在插入 sql 前执行还是插入 sql 后执行
+                resultType：类型
+                <selectKey keyProperty="id" resultType="long" keyColumn="id" order="AFTER"></selectKey>
+                插入前执行顺序：先去序列里查询序列值，封装到 javaBean 再进行插入
+                插入后执行：先插入数据，插入数据时指定 id 为 ${序列}.nextvalue ，然后从插入后的数据中拿到 id 封装到 javaBean
     -->
     <insert id="addTest" parameterType="com.atzyy.entity.TestEntity" useGeneratedKeys="true" keyProperty="id">
         insert into test(name,age,first_name,grow_up) values (
@@ -32,4 +67,8 @@
         )
     </insert>
 
+
+    <select id="selectByParams" resultMap="BaseResultMap">
+        select * from test where id = #{id} and name = #{name} and age = #{param3}
+    </select>
 </mapper>

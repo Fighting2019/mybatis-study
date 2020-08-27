@@ -81,4 +81,20 @@ public class MybatisTest {
         Long id = entity.getId();
         System.out.println(id);
     }
+
+    @Test
+    public void paramTest() throws IOException {
+        String resource = "mybatis-config.xml";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        try {
+            TestMapper mapper = sqlSession.getMapper(TestMapper.class);
+            TestEntity entity = mapper.selectByParams(1L, "jay", 10);
+            System.out.println(entity);
+        } finally {
+            sqlSession.close();
+        }
+    }
 }
