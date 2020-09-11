@@ -33,6 +33,23 @@ public class MybatisTest {
         }
     }
 
+    /**
+     * 总结：
+     *  1、根据配置文件（全局，sql 映射）初始化 Configuration 对象
+     *  2、创建一个 DefaultSqlSession 对象
+     *      它里面包含 Configuration 以及 Transaction（事务）和 Executor（根据全局配置文件的 defaultExecutorType 创建出对应的 Executor）
+     *  3、DefaultSqlSession.getMapper()，拿到 Mapper 接口对应的 MapperProxy；
+     *  4、MapperProxy 里面有 DefaultSqlSession
+     *  5、执行增删改查方法：
+     *      1）、调用 DefaultSqlSession 的增删改查（其实就是调用其中 Executor 的增删改查），
+     *      2）、会创建一个 StatementHandler 对象（根据 sql 映射文件中配置的 statementType 属性）。
+     *      （同时也会创建出 ParameterHandler 和 ResultSetHandler 对象）
+     *      3）、调用 StatementHandler 预编译参数及设置参数值。使用 ParameterHandler 来给 sql 设置参数
+     *      4）、调用 StatementHandler 的增删改查方法。
+     *      5）、使用ResultSetHandler 封装结果（根据TypeHandler）
+     *
+     *
+     */
     @Test
     public void selectTest() throws IOException {
         String resource = "mybatis-config.xml";
@@ -54,6 +71,9 @@ public class MybatisTest {
             TestMapper mapper = sqlSession.getMapper(TestMapper.class);
             TestEntity entity = mapper.selectTest(1L);
             System.out.println(entity);
+
+            TestEntity testEntity = mapper.selectTest(1L);
+            System.out.println(entity == testEntity);
         }finally {
             sqlSession.close();
         }

@@ -23,7 +23,7 @@
         type：指定自定义缓存类型，实现 Cache 接口。
 
     -->
-    <cache eviction="FIFO" flushInterval="60000" readOnly="false" size="1024" type=""/>
+    <cache eviction="FIFO" flushInterval="60000" readOnly="false" size="1024"/>
     <!--
         自定义结果映射：
             
@@ -44,7 +44,7 @@
         <association property="deptName" select="com.atzyy.mapper.DeptInfoMapper.selectByNo" column="dept_no"></association>
     </resultMap>
     <select id="selectTest" resultMap="BaseResultMap">
-        select * from test where id = #{aaa}
+        select * from test where id = #{param1}
     </select>
 
     <!--
@@ -68,7 +68,10 @@
     </insert>
 
 
-    <select id="selectByParams" resultMap="BaseResultMap">
+    <!-- 可选 STATEMENT，PREPARED 或 CALLABLE。
+        这会让 MyBatis 分别使用 Statement，PreparedStatement 或 CallableStatement，默认值：PREPARED。
+    -->
+    <select id="selectByParams" resultMap="BaseResultMap" statementType="PREPARED">
         select * from test where id = #{id} and name = #{name} and age = #{param3}
     </select>
 </mapper>

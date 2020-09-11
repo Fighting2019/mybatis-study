@@ -36,6 +36,17 @@
         <setting name="aggressiveLazyLoading" value="false"/>
         <!-- 开启二级缓存 -->
         <setting name="cacheEnabled" value="true"/>
+        <!-- 本地缓存（一级缓存）作用于 SESSION|STATEMENT
+            SESSION：SqlSession 级别的缓存
+            STATEMENT：同一 SqlSession 的不同查询将不进行缓存，也就是可以禁用一级缓存
+         -->
+        <setting name="localCacheScope" value="STATEMENT"/>
+        <!--
+            设置默认执行器类型
+                配置默认的执行器。SIMPLE 就是普通的执行器；REUSE 执行器会重用预处理语句（PreparedStatement）；
+                BATCH 执行器不仅重用语句还会执行批量更新。
+        -->
+        <setting name="defaultExecutorType" value="SIMPLE"/>
     </settings>
 
     <!--
@@ -105,6 +116,8 @@
             class：引用（注册）接口
                 1.有 sql 映射文件，映射文件名必须和接口同名，并且放在与接口同一目录下
                 2.没有 sql 映射文件，所有的 sql 都是利用注解写在接口上
+
+           resource > url > class
      -->
     <mappers>
         <mapper resource="TestMapper.xml"/>
